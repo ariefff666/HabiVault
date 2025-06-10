@@ -1,0 +1,2 @@
+D:/Coolyeah/MobDev/Mid Project/HabiVault/android/app/.cxx/Debug/3d454963/x86_64/CMakeFiles/edit_cache.dir
+D:/Coolyeah/MobDev/Mid Project/HabiVault/android/app/.cxx/Debug/3d454963/x86_64/CMakeFiles/rebuild_cache.dir
