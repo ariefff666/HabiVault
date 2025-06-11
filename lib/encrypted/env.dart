@@ -15,8 +15,7 @@ abstract class Env {
     return Env(encryptionKey, iv);
   }
 
-  const factory Env(String encryptionKey, String iv) =
-      _$Env; // You can call const env = Env('encryption-key', 'iv') from another Dart file using this
+  const factory Env(String encryptionKey, String iv) = _$Env;
 
   const Env._();
 
@@ -35,4 +34,16 @@ abstract class Env {
 
   @FieldKey(defaultValue: "")
   String get firebaseAndroidStorageBucket;
+
+  @FieldKey(defaultValue: "")
+  String get cloudinaryCloudName;
+
+  @FieldKey(defaultValue: "")
+  String get cloudinaryApiKey;
+
+  @FieldKey(defaultValue: "")
+  String get cloudinaryApiSecretKey;
+
+  @FieldKey(defaultValue: "")
+  String get cloudinaryUploadPreset;
 }
