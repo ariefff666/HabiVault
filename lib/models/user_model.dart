@@ -3,31 +3,45 @@ class UserModel {
   final String email;
   final String name;
   final String photoUrl;
+  final int level;
+  final int xp;
+  final int xpToNextLevel;
+  final String title; // <-- TAMBAHKAN INI
 
   UserModel({
     required this.uid,
     required this.email,
     required this.name,
     required this.photoUrl,
+    this.level = 1,
+    this.xp = 0,
+    this.xpToNextLevel = 100,
+    this.title = 'Novice',
   });
 
-  // Fungsi untuk mengubah data user menjadi map agar bisa disimpan di Firestore
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
       'email': email,
       'name': name,
       'photoUrl': photoUrl,
+      'level': level,
+      'xp': xp,
+      'xpToNextLevel': xpToNextLevel,
+      'title': title,
     };
   }
 
-  // Fungsi untuk membuat objek UserModel dari map yang didapat dari Firestore
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       uid: map['uid'] ?? '',
       email: map['email'] ?? '',
       name: map['name'] ?? '',
       photoUrl: map['photoUrl'] ?? '',
+      level: map['level'] ?? 1,
+      xp: map['xp'] ?? 0,
+      xpToNextLevel: map['xpToNextLevel'] ?? 100,
+      title: map['title'] ?? 'Novice',
     );
   }
 }
