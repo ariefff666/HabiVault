@@ -47,6 +47,9 @@ dependencies:
   cloudinary: ^1.2.0
   rxdart: ^0.28.0
   google_fonts: ^6.2.1
+  intl: ^0.20.2
+  fl_chart: ^1.0.0
+  confetti: ^0.8.0
 
 dependency_overrides:
   collection: 1.19.1

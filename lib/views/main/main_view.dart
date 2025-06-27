@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:habi_vault/views/dashboard/dashboard_view.dart';
 import 'package:habi_vault/views/main/placeholder_view.dart';
 import 'package:habi_vault/views/missions/missions_page_view.dart';
+import 'package:habi_vault/views/skills/skills_page';
+import 'package:habi_vault/controllers/leveling_controller.dart';
+import 'dart:async';
 
 // Data untuk setiap tombol aksi
 class ActionButtonData {
@@ -32,6 +35,8 @@ class _MainViewState extends State<MainView>
   late final List<ActionButtonData> _actionButtons;
   final GlobalKey _fabKey = GlobalKey();
 
+  late StreamSubscription<LevelUpEvent> _levelUpSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -55,12 +60,47 @@ class _MainViewState extends State<MainView>
           label: 'Log',
           onTap: () => _onActionSelected('Log Progress')),
     ];
+
+    _levelUpSubscription = levelUpBus.stream.listen((event) {
+      if (mounted) {
+        _showLevelUpDialog(event);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _levelUpSubscription.cancel();
     _animationController.dispose();
     super.dispose();
+  }
+
+  // Fungsi untuk menampilkan dialog perayaan
+  void _showLevelUpDialog(LevelUpEvent event) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(event.isUserLevelUp ? 'LEVEL UP!' : 'SKILL MASTERED!'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                event.isUserLevelUp
+                    ? 'Congratulations! You have reached Level ${event.newLevel} and earned the title "${event.newTitle}"!'
+                    : 'You have mastered "${event.skill!.name}" to the next level: ${event.skill!.level.name.toUpperCase()}!',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Awesome!'))
+          ],
+        );
+      },
+    );
   }
 
   // --- Navigasi dan Aksi ---
@@ -167,7 +207,7 @@ class _MainViewState extends State<MainView>
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       const DashboardView(),
-      const PlaceholderView(pageName: 'All Skills'),
+      const SkillsPage(),
       QuestsPage(showAltarOnLoad: _shouldShowAltarOnNextBuild),
       const PlaceholderView(pageName: 'Profile'),
     ];
