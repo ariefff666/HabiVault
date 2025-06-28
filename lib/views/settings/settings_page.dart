@@ -5,7 +5,7 @@ import 'package:habi_vault/controllers/auth_controller.dart';
 import 'package:habi_vault/controllers/user_controller.dart';
 import 'package:habi_vault/models/user_model.dart';
 import 'package:habi_vault/notifiers/theme_notifier.dart';
-import 'package:habi_vault/views/auth/auth_view.dart';
+// import 'package:habi_vault/views/auth/auth_view.dart';
 import 'package:habi_vault/views/profile/change_password_dialog.dart';
 import 'package:habi_vault/views/profile/edit_profile_page.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +26,6 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          // ... isi dialog tidak berubah
           title: const Text('Konfirmasi Keluar'),
           content: const Text('Apakah Anda yakin ingin keluar?'),
           actions: <Widget>[

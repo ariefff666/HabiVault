@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:habi_vault/controllers/skill_controller.dart';
 import 'package:habi_vault/models/skill_model.dart';
@@ -9,15 +11,20 @@ import 'package:flutter_animate/flutter_animate.dart';
 enum SortSkillsBy { name, createdAt, xp }
 
 class SkillsPage extends StatefulWidget {
-  const SkillsPage({super.key});
+  // Notifier untuk menerima sinyal dari MainView
+  final ValueNotifier<bool> showAddSkillPanelNotifier;
+
+  const SkillsPage({super.key, required this.showAddSkillPanelNotifier});
 
   @override
   State<SkillsPage> createState() => _SkillsPageState();
 }
 
-class _SkillsPageState extends State<SkillsPage> with SingleTickerProviderStateMixin {
+class _SkillsPageState extends State<SkillsPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+  // final SkillController _skillController = SkillController();
+
   // State untuk menyimpan pilihan sortir saat ini
   SortSkillsBy _sortBy = SortSkillsBy.createdAt;
   bool _sortDescending = true;
@@ -26,14 +33,30 @@ class _SkillsPageState extends State<SkillsPage> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    widget.showAddSkillPanelNotifier.addListener(_onShowPanelSignal);
+  }
+
+  void _onShowPanelSignal() {
+    // Jika sinyalnya true, tampilkan panel
+    if (widget.showAddSkillPanelNotifier.value) {
+      // Gunakan addPostFrameCallback untuk memastikan build selesai
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showAddSkillPanel(context);
+        }
+      });
+      // Reset sinyal setelah digunakan
+      widget.showAddSkillPanelNotifier.value = false;
+    }
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    widget.showAddSkillPanelNotifier.removeListener(_onShowPanelSignal);
     super.dispose();
   }
-  
+
   // Fungsi untuk menampilkan bottom sheet pilihan sortir
   void _showSortOptions() {
     showModalBottomSheet(
@@ -47,13 +70,16 @@ class _SkillsPageState extends State<SkillsPage> with SingleTickerProviderStateM
               child: Wrap(
                 runSpacing: 12,
                 children: [
-                  Text('Sort Arsenal By', style: Theme.of(context).textTheme.titleLarge),
+                  Text('Sort Arsenal By',
+                      style: Theme.of(context).textTheme.titleLarge),
                   RadioListTile<SortSkillsBy>(
                     title: const Text('Creation Date'),
                     value: SortSkillsBy.createdAt,
                     groupValue: _sortBy,
                     onChanged: (value) {
-                      setModalState(() { _sortBy = value!; });
+                      setModalState(() {
+                        _sortBy = value!;
+                      });
                     },
                   ),
                   RadioListTile<SortSkillsBy>(
@@ -61,7 +87,9 @@ class _SkillsPageState extends State<SkillsPage> with SingleTickerProviderStateM
                     value: SortSkillsBy.name,
                     groupValue: _sortBy,
                     onChanged: (value) {
-                      setModalState(() { _sortBy = value!; });
+                      setModalState(() {
+                        _sortBy = value!;
+                      });
                     },
                   ),
                   RadioListTile<SortSkillsBy>(
@@ -69,14 +97,18 @@ class _SkillsPageState extends State<SkillsPage> with SingleTickerProviderStateM
                     value: SortSkillsBy.xp,
                     groupValue: _sortBy,
                     onChanged: (value) {
-                      setModalState(() { _sortBy = value!; });
+                      setModalState(() {
+                        _sortBy = value!;
+                      });
                     },
                   ),
                   SwitchListTile(
                     title: const Text('Descending Order'),
                     value: _sortDescending,
                     onChanged: (value) {
-                      setModalState(() { _sortDescending = value; });
+                      setModalState(() {
+                        _sortDescending = value;
+                      });
                     },
                   ),
                   ElevatedButton(
@@ -125,7 +157,7 @@ class _SkillsPageState extends State<SkillsPage> with SingleTickerProviderStateM
       body: TabBarView(
         controller: _tabController,
         children: [
-          _MyArsenalView(sortBy: _sortBy, sortDescending: _sortDescending), 
+          _MyArsenalView(sortBy: _sortBy, sortDescending: _sortDescending),
           _PathsUnseenView(),
         ],
       ),
@@ -143,10 +175,12 @@ class _MyArsenalView extends StatelessWidget {
 
   String get _orderByField {
     switch (sortBy) {
-      case SortSkillsBy.name: return 'name';
-      case SortSkillsBy.xp: return 'currentXp';
+      case SortSkillsBy.name:
+        return 'name';
+      case SortSkillsBy.xp:
+        return 'currentXp';
       case SortSkillsBy.createdAt:
-      default: return 'createdAt';
+        return 'createdAt';
     }
   }
 
@@ -154,18 +188,19 @@ class _MyArsenalView extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<List<SkillModel>>(
       // Panggil getSkills dengan parameter sortir dari state
-      stream: _skillController.getSkills(orderByField: _orderByField, descending: sortDescending),
+      stream: _skillController.getSkills(
+          orderByField: _orderByField, descending: sortDescending),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const _EmptySkillsState();
-          }
-          
+          return const _EmptySkillsState();
+        }
+
         final skills = snapshot.data ?? [];
-        
+
         return GridView.builder(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -180,7 +215,8 @@ class _MyArsenalView extends StatelessWidget {
               return const ForgeSkillCard();
             }
             // Berikan ValueKey unik agar Flutter bisa menganimasikan perubahan urutan
-            return SkillCard(key: ValueKey(skills[index].id), skill: skills[index])
+            return SkillCard(
+                    key: ValueKey(skills[index].id), skill: skills[index])
                 .animate(delay: (50 * index).ms) // Animasi "Puzzle"
                 .fadeIn(duration: 400.ms)
                 .move(begin: const Offset(0, 20), curve: Curves.easeOut);
@@ -217,19 +253,22 @@ class ForgeSkillCard extends StatelessWidget {
               Text(
                 'Forge a New Skill',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, color: colors.primary),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: colors.primary),
               ),
             ],
           ),
         ),
       ),
-    ).animate(
-      onPlay: (controller) => controller.repeat(reverse: true),
-    ).shimmer(
-      delay: 2.seconds,
-      duration: 1800.ms,
-      color: colors.primary.withOpacity(0.3),
-    );
+    )
+        .animate(
+          onPlay: (controller) => controller.repeat(reverse: true),
+        )
+        .shimmer(
+          delay: 2.seconds,
+          duration: 1800.ms,
+          color: colors.primary.withOpacity(0.3),
+        );
   }
 }
 
@@ -239,9 +278,9 @@ class _PathsUnseenView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark 
-          ? Colors.black.withOpacity(0.2) 
-          : Colors.grey.shade200,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black.withOpacity(0.2)
+            : Colors.grey.shade200,
       ),
       child: Center(
         child: Column(
@@ -278,17 +317,27 @@ class _EmptySkillsState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.shield_moon_outlined, size: 100, color: Colors.grey)
+            const Icon(Icons.shield_moon_outlined,
+                    size: 100, color: Colors.grey)
                 .animate(onPlay: (c) => c.repeat(reverse: true))
-                .shimmer(duration: 2000.ms, color: Theme.of(context).colorScheme.primary.withOpacity(0.3))
+                .shimmer(
+                    duration: 2000.ms,
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.3))
                 .animate() // chain animation
-                .slideY(begin: -0.2, end: 0.2, duration: 2000.ms, curve: Curves.easeInOut),
-                
+                .slideY(
+                    begin: -0.2,
+                    end: 0.2,
+                    duration: 2000.ms,
+                    curve: Curves.easeInOut),
             const SizedBox(height: 24),
             Text(
               'Perpustakaan Rune Kosong',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -299,7 +348,8 @@ class _EmptySkillsState extends StatelessWidget {
             const SizedBox(height: 32),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
               ),

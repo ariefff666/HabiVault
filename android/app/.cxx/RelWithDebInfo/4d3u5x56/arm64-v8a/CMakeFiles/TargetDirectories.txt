@@ -1,0 +1,2 @@
+D:/Coolyeah/MobDev/Mid Project/HabiVault/android/app/.cxx/RelWithDebInfo/4d3u5x56/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/Coolyeah/MobDev/Mid Project/HabiVault/android/app/.cxx/RelWithDebInfo/4d3u5x56/arm64-v8a/CMakeFiles/rebuild_cache.dir

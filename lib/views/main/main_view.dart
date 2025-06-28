@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:habi_vault/views/dashboard/dashboard_view.dart';
 import 'package:habi_vault/views/missions/missions_page_view.dart';
 import 'package:habi_vault/views/profile/profile_view.dart';
-import 'package:habi_vault/views/skills/skills_page';
+import 'package:habi_vault/views/skills/skills_page.dart';
 import 'package:habi_vault/controllers/leveling_controller.dart';
 import 'dart:async';
 
@@ -34,6 +34,8 @@ class _MainViewState extends State<MainView>
   final GlobalKey _fabKey = GlobalKey();
   late StreamSubscription<LevelUpEvent> _levelUpSubscription;
   late final List<Widget> _pages;
+  final ValueNotifier<bool> _showAddSkillPanelNotifier =
+      ValueNotifier<bool>(false);
 
   @override
   void initState() {
@@ -43,11 +45,12 @@ class _MainViewState extends State<MainView>
       duration: const Duration(milliseconds: 250),
     );
 
-    // Inisialisasi halaman di sini agar tidak dibuat ulang setiap kali build
+    // Inisialisasi halaman
     _pages = [
       const DashboardView(),
-      const SkillsPage(),
-      // QuestsPage sekarang akan menerima ValueNotifier
+      SkillsPage(
+        showAddSkillPanelNotifier: _showAddSkillPanelNotifier,
+      ),
       QuestsPage(showAltarNotifier: ValueNotifier<bool>(false)),
       const ProfileView(),
     ];
@@ -59,9 +62,10 @@ class _MainViewState extends State<MainView>
         onTap: () => _navigateAndShowAltar(),
       ),
       ActionButtonData(
-          icon: Icons.star_outline_rounded,
-          label: 'Skill',
-          onTap: () => _onActionSelected('Add Skill')),
+        icon: Icons.star_outline_rounded,
+        label: 'Skill',
+        onTap: () => _navigateAndShowAddSkill(),
+      ),
       ActionButtonData(
           icon: Icons.history_edu_rounded,
           label: 'Log',
@@ -79,6 +83,7 @@ class _MainViewState extends State<MainView>
   void dispose() {
     _levelUpSubscription.cancel();
     _animationController.dispose();
+    _showAddSkillPanelNotifier.dispose();
     super.dispose();
   }
 
@@ -123,6 +128,19 @@ class _MainViewState extends State<MainView>
   void _onActionSelected(String action) {
     debugPrint('$action selected! coy');
     _closeMenu();
+  }
+
+  // --- FUNGSI UNTUK NAVIGASI DAN MEMBUKA ADD SKILL PANEL ---
+  void _navigateAndShowAddSkill() {
+    _closeMenu();
+
+    // Kirim sinyal ke SkillsPage dengan mengubah nilai notifier
+    _showAddSkillPanelNotifier.value = true;
+
+    // Pindah tab ke SkillsPage (index 1)
+    setState(() {
+      _selectedIndex = 1;
+    });
   }
 
   // --- FUNGSI UNTUK NAVIGASI DAN MEMBUKA ALTAR ---

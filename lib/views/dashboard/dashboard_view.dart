@@ -15,7 +15,9 @@ import 'package:habi_vault/models/user_model.dart';
 import 'package:habi_vault/controllers/mission_controller.dart';
 // import 'package:habi_vault/models/mission_model.dart';
 import 'package:habi_vault/views/dashboard/mission_card.dart';
+import 'package:habi_vault/views/profile/profile_view.dart';
 import 'package:habi_vault/views/skills/add_skill_panel.dart';
+import 'package:habi_vault/views/skills/skill_detail_page.dart';
 
 enum SkillSortType { level, name, recent }
 
@@ -386,7 +388,12 @@ class __CharacterStatusHeaderState extends State<_CharacterStatusHeader> {
     return Row(
       children: [
         GestureDetector(
-          onTap: () {/* Navigasi ke Halaman Profil */},
+          onTap: () {
+            // NOTE: Jika ProfileView ada di tab lain, ini perlu state management
+            // untuk mengubah tab di MainView. Untuk saat ini, kita push halaman baru.
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const ProfileView()));
+          },
           child: CircleAvatar(
             radius: 32,
             backgroundColor:
@@ -631,7 +638,12 @@ class _SkillCarouselCardState extends State<_SkillCarouselCard> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // TODO: Navigasi ke halaman detail skill
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SkillDetailPage(skillId: widget.skill.id),
+              ),
+            );
           },
           borderRadius: BorderRadius.circular(16),
           child: Padding(
