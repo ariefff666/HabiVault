@@ -1,70 +1,141 @@
-# Secure-MVC-Flutter-Firebase-Example
+<div align="center">
+  <img src="URL_LOGO_HABIVAULT_ANDA_DISINI" alt="HabiVault Logo" width="150"/>
+  <h1>HabiVault</h1>
+  <p><strong>Level Up Your Life, One Habit at a Time.</strong></p>
+  <p>HabiVault adalah sebuah aplikasi "Life RPG" yang mengubah proses pengembangan diri menjadi sebuah petualangan yang imersif dan memuaskan. Lacak kebiasaan, selesaikan misi, dan saksikan karakter Anda di dunia nyata bertumbuh dan naik level.</p>
 
-A Flutter project demonstrating a secure implementation of the Model-View-Controller (MVC) architecture integrated with Firebase for authentication and Firestore for data management. This project includes features like user authentication, cart management, and secure environment variable handling.
+  <p>
+    <img src="https://img.shields.io/badge/Flutter-3.x-blue?logo=flutter" alt="Flutter Version">
+    <img src="https://img.shields.io/badge/Firebase-Integrated-orange?logo=firebase" alt="Firebase">
+    <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
+  </p>
+</div>
 
----
+## ✨ Tampilan Aplikasi
 
-## Features
-
-- **MVC Architecture**: Clean separation of concerns between Models, Views, and Controllers.
-- **Firebase Integration**:
-  - Authentication (Email/Password and Google Sign-In).
-  - Firestore for real-time database operations.
-- **Secure Environment Variables**: Uses `flutter_secure_dotenv` for managing sensitive keys.
-- **Cross-Platform Support**: Works on Android, iOS, Web, Windows, macOS, and Linux.
-
----
-
-## Prerequisites
-
-Before running this project, ensure you have the following installed:
-
-1. [Flutter SDK](https://docs.flutter.dev/get-started/install) (version 3.6.0 or higher).
-2. [Firebase CLI](https://firebase.google.com/docs/cli) for setting up Firebase.
-3. A Firebase project configured with:
-   - Firebase Authentication.
-   - Firestore Database.
-4. A valid `encryption_key.json` file for secure environment variable handling.
+<p align="center">
+  <img src="URL_SCREENSHOT_LOGIN.png" width="200" alt="Login Screen">
+  <img src="URL_SCREENSHOT_DASHBOARD.png" width="200" alt="Dashboard">
+  <img src="URL_SCREENSHOT_SKILLS.png" width="200" alt="Skills Page">
+</p>
 
 ---
 
-## Getting Started
+## 🚀 Gambaran Proyek
 
-Follow these steps to set up and run the project:
+HabiVault lahir dari filosofi **"Atmospheric Minimalism"**. Kami percaya bahwa aplikasi pengembangan diri tidak harus membosankan. HabiVault mengubah tugas-tugas harian menjadi "Misi" dan keahlian yang ingin dikuasai menjadi "Skill". Setiap misi yang selesai akan memberikan XP yang tidak hanya meningkatkan level karakter Anda, tetapi juga level *skill* yang relevan. Dengan antarmuka yang elegan, penuh animasi, dan nuansa RPG yang kental, HabiVault adalah *command center* pribadi Anda untuk menjadi versi terbaik dari diri sendiri.
 
-### 1. Clone the Repository
+### 🎯 Sustainable Development Goals (SDG) yang Didukung
 
-```bash
-git clone https://github.com/DSC-UNSRI/Secure-MVC-Flutter-Firebase-Example.git
-cd Secure-MVC-Flutter-Firebase-Example
-```
-### 2. Install Dependencies
+Proyek ini secara aktif mendukung beberapa tujuan Pembangunan Berkelanjutan dari PBB:
 
-```bash
-flutter pub get
-```
+* **SDG 3: Kehidupan Sehat dan Sejahtera (Good Health and Well-being):** Dengan melacak *skill* seperti "Fitness", "Meditasi", atau "Makan Bergizi", aplikasi ini mendorong pengguna untuk membangun dan mempertahankan gaya hidup yang sehat secara fisik dan mental.
+* **SDG 4: Pendidikan Berkualitas (Quality Education):** Pengguna dapat membuat *skill* untuk belajar hal baru seperti "Belajar Bahasa Jepang", "Membaca Buku Non-fiksi", atau "Menguasai Flutter", menjadikan HabiVault sebagai alat untuk mendukung pembelajaran seumur hidup.
+* **SDG 8: Pekerjaan Layak dan Pertumbuhan Ekonomi (Decent Work and Economic Growth):** Fitur pelacakan *skill* profesional seperti "Public Speaking", "Manajemen Proyek", atau "Desain Grafis" membantu pengguna untuk secara terstruktur meningkatkan keahlian mereka demi pertumbuhan karir yang lebih baik.
 
-### 3. Configure Gradle Properties
+## 🛠️ Tumpukan Teknologi (Tech Stack)
 
-- Open `android/gradle.properties`
-- Delete the line `org.gradle.java.home=value` or change with your defined Java Home Path.
+| Kategori      | Teknologi                                                                                                        |
+| :------------ | :------------------------------------------------------------------------------------------------------------------- |
+| **Framework** | Flutter 3.x                                                                                                          |
+| **Bahasa** | Dart                                                                                                                 |
+| **Database** | Cloud Firestore                                                                                                      |
+| **Autentikasi** | Firebase Authentication (Email/Password, Google Sign-In)                                                           |
+| **Penyimpanan** | Cloudinary (untuk foto profil pengguna)                                                                              |
+| **Manajemen State** | Provider                                                                                                       |
+| **Animasi** | Flutter Animate, Confetti                                                                                            |
+| **Lainnya** | Google Fonts, RxDart, Collection, Intl                                                                             |
 
-### 4. Configure Firebase
+### 🔥 Penggunaan Firebase
 
-- Download and install [Firebase CLI](https://firebase.google.com/docs/cli) (you may use npm or use standalone package).
-- Make sure `firebase` command is recognized (run in CMD). If not, make sure to have the firebase tools defined in environment variable path.
-- Navigate to [Firebase Console](https://console.firebase.google.com/u/0/) and click `Create a Firebase project`. Then, just follow the instructions.
-- After created, navigate to `Overview` and click `Add App > Android`. Then, just follow the instructions (make sure the Android package name is the same as your `android/app/build.gradle` applicationId).
-- After Android app created in Firebase Console, navigate to `Overview` and click `Build > Authentication` and `Build > Firestore Database` (just follow the instructions on creation, choose the closest server with your country (e.g. Jakarta), use Test Mode Rules at the moment).
-- Back to your IDE or Code Editor, open up terminal and run `cd android` (navigate to `android` folder). Then, run `.\gradlew signingReport` or `./gradlew signingReport`. It should show your keystore's SHA1 and SHA-256.
-- Copy the SHA1 and SHA-256 (enter each) to `Firebase Console > Overview > Android App (Name) > Click Settings Icon`.
-- Under `General` tab, scroll to the bottom. Click `Add fingerprint` and input the SHA1 then SHA-256 value.
-- Back to your IDE or Code Editor, open up terminal and run `firebase login` (just follow the instructions to login your Google Account [use the same as your Firebase Account]).
-- After successfully logged in, run `dart pub global activate flutterfire_cli` then `flutterfire configure --project=YOUR-FIREBASE-PROJECT-ID` (configure only for Android, use Space to disable other platforms). It will generate and replace `lib/firebase_options.dart`.
+* **Firebase Authentication:** Mengelola seluruh alur registrasi dan login pengguna, termasuk verifikasi email dan integrasi dengan Google Sign-In, untuk memastikan akses yang aman.
+* **Cloud Firestore:** Digunakan sebagai database NoSQL *real-time* untuk menyimpan semua data inti aplikasi, seperti:
+    * Profil pengguna (`users`)
+    * Daftar keahlian (`skills`)
+    * Daftar misi (`missions`)
+    * Log progresi XP (`xp_log`)
 
-### 5. Generate Encrypted Environment Keys
+## ⚙️ Panduan Instalasi & Setup
 
-- Add all `FirebaseOptions android` values inside `lib/firebase_options.dart` to `.env`. Look at the this original repository `lib/firebase_options.dart` (before you replace it using flutterfire configure) to modify and proceed (don't push API keys to source control, bud).
-- Run `dart run build_runner build --define flutter_secure_dotenv_generator:flutter_secure_dotenv=OUTPUT_FILE=encryption_key.json`.
-- Change `.vscode/launch.json` `ENCRYPTION_KEY` and `IV_KEY` based on generated `encryption_key.json` (root-level folder).
-- Use `Run and Debug` (CTRL + SHIFT + D) feature and debug the app using your favorite Android emulator or via USB debugging.
+Untuk menjalankan proyek ini di lingkungan lokal Anda, ikuti langkah-langkah berikut:
+
+1.  **Clone Repositori**
+    ```bash
+    git clone https://github.com/ariefff666/HabiVault.git
+    cd HabiVault
+    ```
+
+2.  **Instal Dependensi**
+    ```bash
+    flutter pub get
+    ```
+3. **Konfigurasi Gradle Properties**
+    * Buka `android/gradle.properties` 
+    * Hapus baris `org.gradle.java.home=value` atau ganti dengan direktori Java Home Path milik anda. 
+  
+4.  **Setup Proyek Firebase**
+    * Buat sebuah proyek baru di [Firebase Console](https://console.firebase.google.com/).
+    * Tambahkan aplikasi **Android** dan/atau **iOS** ke proyek Anda. Ikuti instruksi untuk menambahkan file konfigurasi (`google-services.json` untuk Android, `GoogleService-Info.plist` untuk iOS) ke dalam proyek Flutter Anda.
+    * Di Firebase Console, aktifkan layanan berikut:
+        * **Authentication:** Aktifkan *provider* **Email/Password** dan **Google**.
+        * **Firestore Database:** Buat database dalam mode produksi atau tes.
+    * Kembali ke IDE atau Editor Kode Anda, buka terminal dan jalankan `cd android` (navigasi ke folder `android`). Kemudian, jalankan `.\gradlew signingReport` atau `./gradlew signingReport`. Ini akan menampilkan SHA1 dan SHA-256 dari keystore Anda.
+    * Salin SHA1 dan SHA-256 (masukkan masing-masing) ke `Firebase Console > Overview > Android App (Nama) > Klik Ikon Pengaturan`.
+    * Di tab `General`, gulir ke bawah. Klik `Add fingerprint` dan masukkan nilai SHA1 lalu SHA-256.
+    * Kembali ke IDE atau Code Editor Anda, buka terminal dan jalankan `firebase login` (ikuti instruksi untuk masuk ke Akun Google Anda [gunakan yang sama dengan Akun Firebase Anda]).
+    * Setelah berhasil masuk, jalankan `dart pub global activate flutterfire_cli` lalu `flutterfire configure --project=YOUR-FIREBASE-PROJECT-ID` (konfigurasi hanya untuk Android, gunakan spasi untuk menonaktifkan platform lain). Ini akan menghasilkan dan mengganti `lib/firebase_options.dart`.
+
+5.  **Konfigurasi Environment Variables**
+    * Buat file bernama `.env` di direktori utama proyek dengan mengikuti contoh di `.env.example`.
+    * Tambahkan semua nilai `FirebaseOptions android` di dalam `lib/firebase_options.dart` ke `.env` untuk bagian yang diawali FIREBASE_ANDROID. Periksa file asli `lib/firebase_options.dart` pada github ini [https://github.com/DSC-UNSRI/Secure-MVC-Flutter-Firebase-Example] (sebelum Anda menggantinya menggunakan `flutterfire configure`) untuk dimodifikasi dan dilanjutkan (jangan simpan API Key ke source control, bruh).
+    * Isi sisa file tersebut (bagian Cloudinary) dengan kunci API dari proyek Cloudinary Anda.
+        ```env
+        # Firebase Keys (dapatkan dari file konfigurasi Firebase)
+        FIREBASE_ANDROID_API_KEY=...
+        FIREBASE_ANDROID_APP_ID=...
+        # ... (dan seterusnya)
+
+        # Cloudinary Keys (dapatkan dari dashboard Cloudinary Anda)
+        CLOUDINARY_CLOUD_NAME=...
+        CLOUDINARY_API_KEY=...
+        CLOUDINARY_UPLOAD_PRESET=...
+        ```
+    * Jalankan perintah ini untuk mengenkripsi kunci Anda:
+        ```bash
+        dart run build_runner build --define flutter_secure_dotenv_generator:flutter_secure_dotenv=OUTPUT_FILE=encryption_key.json
+        ```
+    * Ubah `.vscode/launch.json` `ENCRYPTION_KEY` dan `IV_KEY` berdasarkan file `encryption_key.json` yang dihasilkan (berada folder root).
+    * *Catatan: Konfigurasi `launch.json` untuk VS Code mungkin diperlukan jika Anda ingin menjalankan dalam mode debug dengan variabel terenkripsi.*
+
+5.  **Jalankan Aplikasi**
+    * Gunakan fitur `Run and Debug` (CTRL + SHIFT + D) dan debug aplikasi menggunakan emulator Android favorit Anda atau melalui USB debugging.
+
+## 🚀 Cara Penggunaan & Kontribusi
+
+### Cara Penggunaan
+1.  **Buat Akun:** Daftar menggunakan email atau Google.
+2.  **Ukir Skill Pertama Anda:** Setelah masuk, Anda akan dipandu untuk membuat *skill* pertama yang ingin Anda kuasai.
+3.  **Tetapkan Misi:** Buat misi-misi harian atau mingguan yang terhubung dengan *skill* Anda.
+4.  **Taklukkan Misi:** Selesaikan misi Anda setiap hari dan tandai sebagai selesai untuk mendapatkan XP.
+5.  **Saksikan Progres Anda:** Lihat level karakter dan *skill* Anda meningkat di *dashboard* dan halaman "Sanctuary of Potential".
+
+### Panduan Kontribusi
+Kami sangat terbuka untuk kontribusi! Jika Anda ingin membantu mengembangkan HabiVault, silakan:
+1.  *Fork* repositori ini.
+2.  Buat *branch* baru (`git checkout -b fitur/NamaFiturAnda`).
+3.  Lakukan perubahan dan *commit* (`git commit -m 'Menambahkan Fitur Keren'`).
+4.  *Push* ke *branch* Anda (`git push origin fitur/NamaFiturAnda`).
+5.  Buka sebuah *Pull Request*.
+
+## 📥 Unduh APK
+
+Anda bisa mengunduh dan mencoba versi rilis dari aplikasi ini melalui tautan di bawah.
+
+* [Unduh APK (arm64-v8a)](URL_RELEASE_APK_ANDA)
+* [Unduh APK (universal)](URL_RELEASE_APK_ANDA)
+
+---
+
+<div align="center">
+  Dibuat dengan ❤️ dan semangat untuk pengembangan diri.
+</div>
