@@ -7,9 +7,11 @@ import 'package:habi_vault/notifiers/theme_notifier.dart';
 import 'package:habi_vault/views/auth/auth_view.dart';
 import 'package:habi_vault/views/main/main_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

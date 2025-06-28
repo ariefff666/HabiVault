@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:habi_vault/views/dashboard/dashboard_view.dart';
-import 'package:habi_vault/views/main/placeholder_view.dart';
 import 'package:habi_vault/views/missions/missions_page_view.dart';
+import 'package:habi_vault/views/profile/profile_view.dart';
 import 'package:habi_vault/views/skills/skills_page';
 import 'package:habi_vault/controllers/leveling_controller.dart';
 import 'dart:async';
@@ -27,15 +27,13 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView>
     with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
-  // State baru untuk mengontrol pembukaan Altar
   bool _shouldShowAltarOnNextBuild = false;
-
   late AnimationController _animationController;
   int? _hoveredIndex;
   late final List<ActionButtonData> _actionButtons;
   final GlobalKey _fabKey = GlobalKey();
-
   late StreamSubscription<LevelUpEvent> _levelUpSubscription;
+  late final List<Widget> _pages;
 
   @override
   void initState() {
@@ -44,6 +42,15 @@ class _MainViewState extends State<MainView>
       vsync: this,
       duration: const Duration(milliseconds: 250),
     );
+
+    // Inisialisasi halaman di sini agar tidak dibuat ulang setiap kali build
+    _pages = [
+      const DashboardView(),
+      const SkillsPage(),
+      // QuestsPage sekarang akan menerima ValueNotifier
+      QuestsPage(showAltarNotifier: ValueNotifier<bool>(false)),
+      const ProfileView(),
+    ];
 
     _actionButtons = [
       ActionButtonData(
@@ -88,7 +95,7 @@ class _MainViewState extends State<MainView>
               Text(
                 event.isUserLevelUp
                     ? 'Congratulations! You have reached Level ${event.newLevel} and earned the title "${event.newTitle}"!'
-                    : 'You have mastered "${event.skill!.name}" to the next level: ${event.skill!.level.name.toUpperCase()}!',
+                    : 'You have mastered "${event.skill!.name}"! It has reached Level ${event.skill!.level} (${event.skill!.tierName.toUpperCase()})!',
                 textAlign: TextAlign.center,
               ),
             ],
@@ -122,19 +129,14 @@ class _MainViewState extends State<MainView>
   void _navigateAndShowAltar() {
     _closeMenu();
 
-    // Berikan feedback visual
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //     content: const Text('Opening Mission Creator...'),
-    //     duration: const Duration(milliseconds: 800),
-    //     behavior: SnackBarBehavior.floating,
-    //     backgroundColor: Theme.of(context).colorScheme.primary,
-    //   ),
-    // );
+    // Dapatkan instance QuestsPage dari list
+    final questsPage = _pages[2] as QuestsPage;
+    // Ubah nilai Notifier untuk memicu altar, tanpa `setState` di sini
+    questsPage.showAltarNotifier.value = true;
 
+    // Pindah tab
     setState(() {
       _selectedIndex = 2;
-      _shouldShowAltarOnNextBuild = true;
     });
   }
 
@@ -205,13 +207,6 @@ class _MainViewState extends State<MainView>
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> pages = [
-      const DashboardView(),
-      const SkillsPage(),
-      QuestsPage(showAltarOnLoad: _shouldShowAltarOnNextBuild),
-      const PlaceholderView(pageName: 'Profile'),
-    ];
-
     // Reset bendera setelah build selesai untuk mencegah altar terbuka terus-menerus
     if (_shouldShowAltarOnNextBuild) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -230,17 +225,16 @@ class _MainViewState extends State<MainView>
           children: [
             Scaffold(
               extendBody: true,
+              // Gunakan _pages yang sudah di-cache
               body: IndexedStack(
                 index: _selectedIndex,
-                children: pages,
+                children: _pages,
               ),
               bottomNavigationBar: _buildCustomBottomAppBar(),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerDocked,
               floatingActionButton: _buildCentralButton(),
             ),
-
-            // Action buttons di layer terpisah dengan positioning manual
             if (_animationController.value > 0.1) _buildActionButtonsOverlay(),
           ],
         );

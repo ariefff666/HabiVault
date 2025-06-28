@@ -22,14 +22,6 @@ class LevelingController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? _user = FirebaseAuth.instance.currentUser;
 
-  // Aturan XP untuk skill level up
-  final Map<SkillLevel, int> _skillXpThresholds = {
-    SkillLevel.beginner: 1500,
-    SkillLevel.amateur: 5000,
-    SkillLevel.expert: 12500,
-    SkillLevel.professional: 999999, // Level maksimal
-  };
-
   // Method untuk menambahkan XP
   Future<void> addXp(int xpGained, String skillId) async {
     if (_user == null) return;
@@ -37,7 +29,6 @@ class LevelingController {
     final userRef = _firestore.collection('users').doc(_user.uid);
     final skillRef = userRef.collection('skills').doc(skillId);
 
-    // Gunakan transaksi untuk memastikan semua operasi data aman
     return _firestore.runTransaction((transaction) async {
       final userSnapshot = await transaction.get(userRef);
       final skillSnapshot = await transaction.get(skillRef);
@@ -70,27 +61,57 @@ class LevelingController {
         'title': newTitle,
       });
 
-      // --- 2. Update XP & Level Skill ---
+      // --- 2. Update XP & Level Skill dengan Logika Baru ---
       var skillModel = SkillModel.fromMap(skillSnapshot.data()!);
-      int newSkillXp = skillModel.currentXp + xpGained;
-      SkillLevel newSkillLevel = skillModel.level;
+      var currentSkillXp = skillModel.currentXp + xpGained;
+      var currentSkillLevel = skillModel.level;
+      var xpForNext = skillModel.xpForNextLevel;
+      bool hasLeveledUp = false;
 
-      // Cek apakah skill naik level
-      int requiredXp = _skillXpThresholds[newSkillLevel] ?? 999999;
-      if (newSkillXp >= requiredXp &&
-          newSkillLevel != SkillLevel.professional) {
-        // Pindah ke level berikutnya
-        newSkillLevel = SkillLevel.values[newSkillLevel.index + 1];
+      // Loop untuk menangani multi-level up dalam satu kali penambahan XP
+      while (currentSkillXp >= xpForNext) {
+        hasLeveledUp = true;
+        // Kurangi XP yang sudah dipakai untuk naik level
+        currentSkillXp -= xpForNext;
+        // Naikkan level
+        currentSkillLevel++;
 
-        // SIARKAN EVENT SKILL LEVEL UP!
-        final updatedSkill = skillModel..level = newSkillLevel;
-        levelUpBus.add(LevelUpEvent(isUserLevelUp: false, skill: updatedSkill));
+        // Tentukan XP yang dibutuhkan untuk level berikutnya berdasarkan tier BARU
+        if (currentSkillLevel >= 30) {
+          xpForNext = 2500;
+        } else if (currentSkillLevel >= 20) {
+          xpForNext = 1200;
+        } else if (currentSkillLevel >= 10) {
+          xpForNext = 500;
+        } else {
+          xpForNext = 150;
+        }
       }
 
-      transaction.update(
-          skillRef, {'currentXp': newSkillXp, 'level': newSkillLevel.index});
+      if (hasLeveledUp) {
+        // Buat model baru untuk dikirim ke event bus
+        final updatedSkillForEvent = SkillModel(
+          id: skillModel.id,
+          name: skillModel.name,
+          icon: skillModel.icon,
+          color: skillModel.color,
+          level: currentSkillLevel, // Level yang sudah naik
+          currentXp: currentSkillXp,
+          xpForNextLevel: xpForNext,
+          createdAt: skillModel.createdAt,
+        );
+        // Siarkan event level up skill
+        levelUpBus.add(
+            LevelUpEvent(isUserLevelUp: false, skill: updatedSkillForEvent));
+      }
 
-      // --- 3. Buat Log Perolehan XP ---
+      transaction.update(skillRef, {
+        'level': currentSkillLevel,
+        'currentXp': currentSkillXp,
+        'xpForNextLevel': xpForNext,
+      });
+
+      // --- 3. Buat Log Perolehan XP (tidak berubah) ---
       final xpLogRef = skillRef.collection('xp_log').doc();
       transaction.set(xpLogRef, {
         'xpGained': xpGained,

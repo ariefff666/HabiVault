@@ -5,6 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 class SkillController {
   final User? _user = FirebaseAuth.instance.currentUser;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Referensi ke koleksi skills dengan converter
   CollectionReference<SkillModel>? get _skillsCollection {
@@ -58,9 +59,9 @@ class SkillController {
       name: name,
       icon: icon,
       color: color,
-      level: SkillLevel.beginner,
+      level: 1, // Diperbaiki: level awal adalah 1 (int)
       currentXp: 0,
-      xpForNextLevel: 100,
+      xpForNextLevel: 150, // Diperbaiki: XP awal untuk ke level 2
       createdAt: Timestamp.now(),
     );
 
@@ -68,6 +69,7 @@ class SkillController {
     print('New skill "$name" added to Firestore with timestamp!');
   }
 
+  // --- UPDATE SKILL ---
   Future<void> updateSkill(SkillModel skill) async {
     final collection = _skillsCollection;
     if (collection == null) return;
@@ -76,11 +78,37 @@ class SkillController {
 
   // --- DELETE SKILL ---
   Future<void> deleteSkill(String skillId) async {
+    if (_user == null) return;
+
     final collection = _skillsCollection;
     if (collection == null) return;
-    await collection.doc(skillId).delete();
 
-    // TODO: Hapus juga semua misi yang terhubung dengan skillId ini
+    // Buat batch untuk operasi tulis majemuk
+    final batch = _firestore.batch();
+
+    // 1. Dapatkan referensi ke semua misi yang terhubung dengan skillId ini
+    final missionsToDeleteQuery = _firestore
+        .collection('users')
+        .doc(_user.uid)
+        .collection('missions')
+        .where('skillId', isEqualTo: skillId);
+
+    final missionsSnapshot = await missionsToDeleteQuery.get();
+
+    // 2. Tambahkan setiap misi yang ditemukan ke dalam batch untuk dihapus
+    for (final doc in missionsSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+
+    // 3. Tambahkan skill itu sendiri ke dalam batch untuk dihapus
+    final skillRef = collection.doc(skillId);
+    batch.delete(skillRef);
+
+    // 4. Jalankan semua operasi dalam satu transaksi
+    await batch.commit();
+
+    print(
+        'Skill $skillId dan ${missionsSnapshot.docs.length} misi terhubung telah dihapus.');
   }
 
   Stream<SkillModel?> getSkillById(String skillId) {

@@ -4,7 +4,6 @@ import 'package:cloudinary/cloudinary.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:habi_vault/encrypted/env.dart';
 import '../models/user_model.dart';
 
@@ -30,7 +29,7 @@ class AuthController {
   );
 
   // Ganti total method ini dengan logika Cloudinary
-  Future<String?> _uploadProfilePicture(String userId, File imageFile) async {
+  Future<String?> uploadProfilePicture(String userId, File imageFile) async {
     try {
       final response = await cloudinary.unsignedUpload(
         file: imageFile.path,
@@ -38,7 +37,9 @@ class AuthController {
       );
 
       if (response.isSuccessful && response.secureUrl != null) {
-        if (kDebugMode) print('Upload successful: ${response.secureUrl}');
+        if (kDebugMode) {
+          debugPrint('Upload Cloudinary berhasil: ${response.secureUrl}');
+        }
         return response.secureUrl;
       }
     } catch (e) {
@@ -98,7 +99,7 @@ class AuthController {
       if (user != null) {
         String? photoUrl;
         if (imageFile != null) {
-          photoUrl = await _uploadProfilePicture(user.uid, imageFile);
+          photoUrl = await uploadProfilePicture(user.uid, imageFile);
         }
         // final newUser = UserModel(
         //     uid: user.uid, name: name, email: email, photoUrl: photoUrl ?? '');
@@ -134,6 +135,31 @@ class AuthController {
     } on FirebaseAuthException catch (e) {
       if (kDebugMode) debugPrint('Error during Google login: $e');
       throw AuthException('Google sign-in failed. Please try again.');
+    }
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) throw AuthException("Tidak ada pengguna yang masuk.");
+
+    // Buat kredensial dengan email dan password lama
+    final cred = EmailAuthProvider.credential(
+        email: user.email!, password: currentPassword);
+
+    try {
+      // Lakukan re-autentikasi pengguna
+      await user.reauthenticateWithCredential(cred);
+
+      // Jika berhasil, perbarui password
+      await user.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
+        throw AuthException("Password lama yang Anda masukkan salah.");
+      }
+      throw AuthException("Terjadi kesalahan: ${e.message}");
     }
   }
 

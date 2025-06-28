@@ -57,7 +57,7 @@ class _DashboardViewState extends State<DashboardView> {
                 final userModel = userSnapshot.data!;
 
                 return ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
+                  padding: const EdgeInsets.fromLTRB(20, 25, 20, 110),
                   children: [
                     _CharacterStatusHeader(userModel: userModel),
                     const SizedBox(height: 32),
@@ -309,140 +309,6 @@ class _AnimatedXpBar extends StatelessWidget {
     );
   }
 }
-
-// class _TodaysMissionsSection extends StatelessWidget {
-//   final MissionController missionController;
-//   const _TodaysMissionsSection({required this.missionController});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return StreamBuilder<List<MissionModel>>(
-//       stream: missionController.getTodaysMissions(),
-//       builder: (context, snapshot) {
-//         if (snapshot.connectionState == ConnectionState.waiting) {
-//           return const Center(child: CircularProgressIndicator());
-//         }
-//         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-//           return const _PlaceholderCard(
-//             height: 150,
-//             text: 'No missions for today. Enjoy your break!',
-//           );
-//         }
-
-//         final missions = snapshot.data!;
-//         return Column(
-//           children: missions.map((mission) {
-//             return MissionCard(
-//               mission: mission,
-//               onCompleted: () => missionController.completeMission(mission),
-//             ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.3);
-//           }).toList(),
-//         );
-//       },
-//     );
-//   }
-// }
-
-// KARTU MISI YANG INTERAKTIF DAN ANIMATIF
-// class MissionCard extends StatelessWidget {
-//   final MissionModel mission;
-//   final VoidCallback onCompleted;
-
-//   const MissionCard(
-//       {super.key, required this.mission, required this.onCompleted});
-
-//   bool _isCompletedToday() {
-//     if (mission.lastCompleted == null) return false;
-//     final now = DateTime.now();
-//     final last = mission.lastCompleted!.toDate();
-//     return now.year == last.year &&
-//         now.month == last.month &&
-//         now.day == last.day;
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final bool isDone = _isCompletedToday();
-//     final colors = Theme.of(context).colorScheme;
-
-//     return Card(
-//       margin: const EdgeInsets.only(bottom: 12),
-//       elevation: 2,
-//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-//       color: isDone ? colors.surface.withOpacity(0.5) : colors.surface,
-//       child: Padding(
-//         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-//         child: Row(
-//           children: [
-//             // Checkbox Kustom
-//             GestureDetector(
-//               onTap: isDone ? null : onCompleted,
-//               child: AnimatedContainer(
-//                 duration: const Duration(milliseconds: 300),
-//                 width: 28,
-//                 height: 28,
-//                 decoration: BoxDecoration(
-//                   shape: BoxShape.circle,
-//                   color: isDone ? colors.primary : Colors.transparent,
-//                   border: Border.all(
-//                       color: isDone ? Colors.transparent : colors.primary,
-//                       width: 2),
-//                 ),
-//                 child: isDone
-//                     ? const Icon(Icons.check, color: Colors.white, size: 18)
-//                     : null,
-//               ),
-//             ),
-//             const SizedBox(width: 16),
-//             // Info Misi
-//             Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Text(
-//                     mission.title,
-//                     style: TextStyle(
-//                       fontSize: 16,
-//                       fontWeight: FontWeight.bold,
-//                       decoration: isDone
-//                           ? TextDecoration.lineThrough
-//                           : TextDecoration.none,
-//                       color: isDone ? Theme.of(context).disabledColor : null,
-//                     ),
-//                   ),
-//                   const SizedBox(height: 4),
-//                   Row(
-//                     children: [
-//                       Icon(Icons.star_rounded,
-//                           size: 14, color: colors.primary.withOpacity(0.7)),
-//                       const SizedBox(width: 4),
-//                       Text(
-//                         '// TODO: Skill Name', // Nanti kita ganti dengan nama skill asli
-//                         style: TextStyle(
-//                             fontSize: 12,
-//                             color: colors.primary.withOpacity(0.7)),
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             const SizedBox(width: 16),
-//             // XP Gain
-//             Text(
-//               '+${mission.xp} XP',
-//               style: TextStyle(
-//                 fontWeight: FontWeight.bold,
-//                 color:
-//                     isDone ? Theme.of(context).disabledColor : colors.primary,
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 // WIDGET PLACEHOLDER UNTUK KONTEN MENDATANG
 class _PlaceholderCard extends StatelessWidget {

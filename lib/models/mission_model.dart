@@ -14,6 +14,8 @@ class MissionModel {
   final String? notes;
   final Timestamp createdAt;
   Timestamp? lastCompleted;
+  final bool isRescheduled;
+  final Timestamp? originalScheduledDate;
 
   MissionModel({
     required this.id,
@@ -26,6 +28,8 @@ class MissionModel {
     this.notes,
     required this.createdAt,
     this.lastCompleted,
+    this.isRescheduled = false,
+    this.originalScheduledDate,
   });
 
   // int get xp {
@@ -51,6 +55,8 @@ class MissionModel {
       'notes': notes,
       'createdAt': createdAt,
       'lastCompleted': lastCompleted,
+      'isRescheduled': isRescheduled,
+      'originalScheduledDate': originalScheduledDate,
     };
   }
 
@@ -72,6 +78,8 @@ class MissionModel {
       notes: map['notes'],
       createdAt: map['createdAt'] ?? Timestamp.now(),
       lastCompleted: map['lastCompleted'],
+      isRescheduled: map['isRescheduled'] ?? false,
+      originalScheduledDate: map['originalScheduledDate'],
     );
   }
 }

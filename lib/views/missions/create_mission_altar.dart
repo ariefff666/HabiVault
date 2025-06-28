@@ -54,6 +54,7 @@ void showCreateMissionAltar(BuildContext context,
   ).then((_) {
     // PERBAIKAN: Cek langsung ke savedData. Ini lebih andal.
     if (AltarState.savedData != null) {
+      // ignore: use_build_context_synchronously
       _checkAndShowMiniAltar(context);
     }
   });
@@ -376,7 +377,6 @@ class _MissionFormContents extends StatefulWidget {
 }
 
 class __MissionFormContentsState extends State<_MissionFormContents> {
-  // ... (properti lain tetap sama)
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _durationController = TextEditingController();

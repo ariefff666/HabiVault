@@ -5,6 +5,8 @@ import 'package:habi_vault/models/skill_model.dart';
 class EnrichedMissionModel {
   final MissionModel mission;
   final SkillModel? skill;
+  final DateTime? specificUpcomingDate;
 
-  EnrichedMissionModel({required this.mission, this.skill});
+  EnrichedMissionModel(
+      {required this.mission, this.skill, this.specificUpcomingDate});
 }

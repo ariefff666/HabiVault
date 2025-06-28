@@ -1,13 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// ignore_for_file: deprecated_member_use
 
-enum SkillLevel { beginner, amateur, expert, professional }
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
+// Enum untuk Tier
+enum SkillTier { beginner, amateur, expert, professional }
 
 class SkillModel {
   final String id;
   final String name;
   final String icon;
   final int color;
-  late final SkillLevel level;
+  final int level;
   final int currentXp;
   final int xpForNextLevel;
   final Timestamp createdAt;
@@ -17,11 +21,33 @@ class SkillModel {
     required this.name,
     required this.icon,
     required this.color,
-    this.level = SkillLevel.beginner,
+    this.level = 1,
     this.currentXp = 0,
-    this.xpForNextLevel = 100,
+    this.xpForNextLevel = 150,
     required this.createdAt,
   });
+
+  // --- GETTER BARU UNTUK TIER ---
+  SkillTier get tier {
+    if (level >= 30) return SkillTier.professional;
+    if (level >= 20) return SkillTier.expert;
+    if (level >= 10) return SkillTier.amateur;
+    return SkillTier.beginner;
+  }
+
+  // --- GETTER BARU UNTUK NAMA TIER ---
+  String get tierName {
+    switch (tier) {
+      case SkillTier.amateur:
+        return 'Amateur';
+      case SkillTier.expert:
+        return 'Expert';
+      case SkillTier.professional:
+        return 'Professional';
+      case SkillTier.beginner:
+        return 'Beginner';
+    }
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -29,7 +55,7 @@ class SkillModel {
       'name': name,
       'icon': icon,
       'color': color,
-      'level': level.index,
+      'level': level,
       'currentXp': currentXp,
       'xpForNextLevel': xpForNextLevel,
       'createdAt': createdAt,
@@ -42,10 +68,21 @@ class SkillModel {
       name: map['name'] ?? '',
       icon: map['icon'] ?? '58269',
       color: map['color'] ?? 0xFF8A63D2,
-      level: SkillLevel.values[map['level'] ?? 0],
+      level: map['level'] ?? 1,
       currentXp: map['currentXp'] ?? 0,
-      xpForNextLevel: map['xpForNextLevel'] ?? 100,
+      xpForNextLevel: map['xpForNextLevel'] ?? 150,
       createdAt: map['createdAt'] ?? Timestamp.now(),
+    );
+  }
+
+  factory SkillModel.empty() {
+    // Ini adalah skill "kosong" sebagai fallback
+    return SkillModel(
+      id: '',
+      name: 'Uncategorized',
+      icon: '60100', // Codepoint untuk ikon 'help_outline'
+      color: Colors.grey.value,
+      createdAt: Timestamp.now(),
     );
   }
 }

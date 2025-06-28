@@ -40,6 +40,39 @@ class MissionController {
     });
   }
 
+  Stream<List<MissionModel>> getAllMissions() {
+    if (_user == null) return Stream.value([]);
+    return _missionsCollection!
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
+  Stream<Map<String, List<MissionModel>>> getGroupedMissions() {
+    if (_user == null) return Stream.value({});
+
+    // Cukup ambil semua misi dan kita akan kelompokkan di sisi klien
+    return _missionsCollection!
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      final missions = snapshot.docs.map((doc) => doc.data()).toList();
+
+      // Buat map kosong untuk hasil pengelompokan
+      final Map<String, List<MissionModel>> groupedMissions = {};
+
+      // Iterasi setiap misi dan masukkan ke dalam map berdasarkan skillId
+      for (var mission in missions) {
+        if (groupedMissions[mission.skillId] == null) {
+          groupedMissions[mission.skillId] = [];
+        }
+        groupedMissions[mission.skillId]!.add(mission);
+      }
+
+      return groupedMissions;
+    });
+  }
+
   // Fungsi untuk menambahkan misi baru
   Future<void> addMission({
     required String title,
@@ -69,6 +102,82 @@ class MissionController {
     print('New mission added to Firestore!');
   }
 
+  // FUNGSI BARU: Menghapus misi
+  Future<void> deleteMission(String missionId) async {
+    if (_user == null) return;
+    await _missionsCollection!.doc(missionId).delete();
+  }
+
+  // FUNGSI BARU: Mengedit misi (terbatas)
+  Future<void> updateMissionDetails({
+    required String missionId,
+    required int xp,
+    required List<int> scheduleDays,
+    required TimeOfDay startTime,
+    Duration? duration,
+    String? notes,
+  }) async {
+    if (_user == null) return;
+    await _missionsCollection!.doc(missionId).update({
+      'xp': xp,
+      'scheduleDays': scheduleDays,
+      'startTime': '${startTime.hour}:${startTime.minute}',
+      'durationInMinutes': duration?.inMinutes,
+      'notes': notes,
+      // Reset status reschedule jika jadwal diubah
+      'isRescheduled': false,
+      'originalScheduledDate': null,
+    });
+  }
+
+  // FUNGSI BARU: Menjadwalkan ulang misi
+  Future<void> rescheduleMission(
+      MissionModel missionToReschedule, DateTime newDateTime) async {
+    if (_user == null) return;
+
+    final batch = FirebaseFirestore.instance.batch();
+
+    // 1. Buat misi baru yang sudah di-reschedule
+    final newMissionRef = _missionsCollection!.doc();
+    final rescheduledMission = MissionModel(
+      id: newMissionRef.id,
+      title: missionToReschedule.title,
+      skillId: missionToReschedule.skillId,
+      xp: missionToReschedule.xp,
+      // Jadwal hanya untuk hari yang baru, di-set ke timestamp agar unik
+      scheduleDays: [newDateTime.weekday],
+      startTime: TimeOfDay.fromDateTime(newDateTime),
+      duration: missionToReschedule.duration,
+      notes: "Rescheduled from original. ${missionToReschedule.notes ?? ''}"
+          .trim(),
+      // Gunakan timestamp dari newDateTime untuk memastikannya unik dan terjadwal dengan benar
+      createdAt: Timestamp.fromDate(newDateTime),
+      isRescheduled: true,
+      originalScheduledDate: missionToReschedule.createdAt,
+    );
+    batch.set(newMissionRef, rescheduledMission.toMap());
+
+    // 2. Hapus jadwal hari ini dari misi asli.
+    final todayWeekday = DateTime.now().weekday;
+    List<int> originalSchedule = List.from(missionToReschedule.scheduleDays);
+
+    // Hanya hapus jika tidak di-reschedule, untuk mencegah penghapusan ganda
+    if (!missionToReschedule.isRescheduled) {
+      originalSchedule.remove(todayWeekday);
+    }
+
+    // Jika jadwal asli masih ada, update. Jika tidak, hapus misi asli.
+    if (originalSchedule.isNotEmpty && !missionToReschedule.isRescheduled) {
+      batch.update(_missionsCollection!.doc(missionToReschedule.id),
+          {'scheduleDays': originalSchedule});
+    } else {
+      // Hapus misi asli jika tidak ada jadwal tersisa atau jika itu adalah misi hasil reschedule
+      batch.delete(_missionsCollection!.doc(missionToReschedule.id));
+    }
+
+    await batch.commit();
+  }
+
   Stream<List<MissionModel>> getMissionsForSkill(String skillId) {
     if (_user == null) return Stream.value([]);
 
@@ -85,13 +194,28 @@ class MissionController {
     if (_user == null) return;
 
     final missionRef = _missionsCollection!.doc(mission.id);
-    await missionRef.update({'lastCompleted': Timestamp.now()});
+    final completionLogRef = missionRef.collection('completion_log').doc();
+    final now = Timestamp.now();
 
-    // Berikan XP dan skillId ke LevelingController
+    // Gunakan batch write untuk operasi atomik
+    final batch = FirebaseFirestore.instance.batch();
+
+    // 1. Perbarui timestamp terakhir di dokumen utama (untuk akses cepat)
+    batch.update(missionRef, {'lastCompleted': now});
+
+    // 2. Tambahkan entri baru ke dalam sub-koleksi log
+    batch.set(completionLogRef, {
+      'completedAt': now,
+      'xpGained': mission.xp, // Simpan juga XP untuk referensi di masa depan
+    });
+
+    await batch.commit();
+
+    // Berikan XP ke LevelingController
     await _levelingController.addXp(mission.xp, mission.skillId);
 
     print(
-        'Mission ${mission.title} completed! User gained ${mission.xp} XP for skill ${mission.skillId}.');
+        'Mission ${mission.title} completed! Logged and user gained ${mission.xp} XP.');
   }
 
   // --- Menghitung jumlah misi yang selesai untuk satu skill ---
@@ -104,6 +228,15 @@ class MissionController {
         .where('lastCompleted', isNotEqualTo: null)
         .snapshots()
         .map((snapshot) => snapshot.docs.length);
+  }
+
+  Stream<QuerySnapshot> getCompletionLogStream(String missionId) {
+    if (_user == null) return Stream.empty();
+    return _missionsCollection!
+        .doc(missionId)
+        .collection('completion_log')
+        .orderBy('completedAt', descending: true)
+        .snapshots();
   }
 
   // --- Menghitung streak harian ---
@@ -148,6 +281,39 @@ class MissionController {
     }
 
     return currentStreak;
+  }
+
+  // Menggabungkan semua misi dan skill
+  Stream<List<EnrichedMissionModel>> getEnrichedMissionsStream() {
+    if (_user == null) return Stream.value([]);
+
+    final missionsStream = _missionsCollection!
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+
+    final skillsStream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_user.uid)
+        .collection('skills')
+        .snapshots()
+        .map((snapshot) {
+      final Map<String, SkillModel> skillsMap = {};
+      for (var doc in snapshot.docs) {
+        final skill = SkillModel.fromMap(doc.data());
+        skillsMap[skill.id] = skill;
+      }
+      return skillsMap;
+    });
+
+    return Rx.combineLatest2(missionsStream, skillsStream,
+        (List<MissionModel> missions, Map<String, SkillModel> skillsMap) {
+      return missions.map((mission) {
+        return EnrichedMissionModel(
+          mission: mission,
+          skill: skillsMap[mission.skillId] ?? SkillModel.empty(),
+        );
+      }).toList();
+    });
   }
 
   // --- getEnrichedTodaysMissions ---

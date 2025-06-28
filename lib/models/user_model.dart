@@ -6,7 +6,7 @@ class UserModel {
   final int level;
   final int xp;
   final int xpToNextLevel;
-  final String title; // <-- TAMBAHKAN INI
+  final String title;
 
   UserModel({
     required this.uid,

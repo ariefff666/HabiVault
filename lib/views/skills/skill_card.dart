@@ -69,8 +69,7 @@ class _SkillCardState extends State<SkillCard> {
     final progress = widget.skill.xpForNextLevel > 0
         ? widget.skill.currentXp / widget.skill.xpForNextLevel
         : 0.0;
-    final levelTier = widget.skill.level.name[0].toUpperCase() +
-        widget.skill.level.name.substring(1);
+    final levelTier = widget.skill.tierName;
 
     return GestureDetector(
       onLongPress: _toggleMenu,
@@ -140,7 +139,7 @@ class _SkillCardState extends State<SkillCard> {
               Positioned(
                 top: 0,
                 right: 0,
-                child: _LevelBadge(level: widget.skill.level.index + 1),
+                child: _LevelBadge(level: widget.skill.level),
               ),
 
               // Tombol Edit/Hapus saat Long Press
