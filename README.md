@@ -16,9 +16,9 @@
 <p align="center">
   <img src="img/screenshot/Login.png" width="200" alt="Login Screen">
   <img src="img/screenshot/Register.png" width="200" alt="Register Screen">
-  <img src="img/screenshot/Dashboard.png.png" width="200" alt="Dashboard">
+  <img src="img/screenshot/Dashboard.png" width="200" alt="Dashboard">
   <img src="img/screenshot/SkillsPage.png" width="200" alt="Skills Page">
-  <img src="img/screenshot/QuestsPage.png" width="200" alt="Quests Page">
+  <img src="img/screenshot/QuestPage.png" width="200" alt="Quests Page">
   <img src="img/screenshot/ProfilePage.png" width="200" alt="Profile Page">
   <img src="img/screenshot/SettingsPage.png" width="200" alt="Settings Page">
 </p>
