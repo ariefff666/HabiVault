@@ -121,7 +121,7 @@ class _MainViewState extends State<MainView>
   }
 
   void _onActionSelected(String action) {
-    print('$action selected! coy');
+    debugPrint('$action selected! coy');
     _closeMenu();
   }
 
@@ -197,10 +197,8 @@ class _MainViewState extends State<MainView>
   // Helper untuk menghitung posisi sub-tombol dengan kurva
   Offset _getActionButtonPosition(int index, Offset fabCenter) {
     // Gunakan nilai yang sama seperti di overlay
-    final verticalDistance =
-        (index == 1) ? 120.0 : 90.0; // Update sesuai perubahan Anda
-    final horizontalDistance =
-        (index - 1) * 70.0; // Update sesuai perubahan Anda
+    final verticalDistance = (index == 1) ? 120.0 : 90.0;
+    final horizontalDistance = (index - 1) * 70.0;
     return Offset(
         fabCenter.dx + horizontalDistance, fabCenter.dy - verticalDistance);
   }
@@ -411,7 +409,7 @@ class _ActionButton extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              print("Action button tapped: ${data.label}");
+              debugPrint("Action button tapped: ${data.label}");
               data.onTap();
             },
             customBorder: const CircleBorder(),

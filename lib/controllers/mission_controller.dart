@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:habi_vault/controllers/mission_events.dart';
 import 'package:habi_vault/models/enriched_mission_model.dart';
 import 'package:habi_vault/models/mission_model.dart';
 import 'package:habi_vault/models/skill_model.dart';
@@ -99,16 +100,16 @@ class MissionController {
     );
 
     await newMissionRef.set(newMission);
-    print('New mission added to Firestore!');
+    debugPrint('New mission added to Firestore!');
   }
 
-  // FUNGSI BARU: Menghapus misi
+  // Fungsi untuk Menghapus misi
   Future<void> deleteMission(String missionId) async {
     if (_user == null) return;
     await _missionsCollection!.doc(missionId).delete();
   }
 
-  // FUNGSI BARU: Mengedit misi (terbatas)
+  // Fungsi untuk Mengedit misi (terbatas)
   Future<void> updateMissionDetails({
     required String missionId,
     required int xp,
@@ -130,7 +131,7 @@ class MissionController {
     });
   }
 
-  // FUNGSI BARU: Menjadwalkan ulang misi
+  // Fungsi untuk Menjadwalkan ulang misi
   Future<void> rescheduleMission(
       MissionModel missionToReschedule, DateTime newDateTime) async {
     if (_user == null) return;
@@ -193,6 +194,14 @@ class MissionController {
   Future<void> completeMission(MissionModel mission) async {
     if (_user == null) return;
 
+    // --- SIARKAN EVENT ---
+    missionCompletionBus.add(MissionCompletedEvent(
+      missionId: mission.id,
+      xpGained: mission.xp,
+      skillId: mission.skillId,
+    ));
+
+    // Lanjutkan dengan menyimpan ke database seperti biasa
     final missionRef = _missionsCollection!.doc(mission.id);
     final completionLogRef = missionRef.collection('completion_log').doc();
     final now = Timestamp.now();
@@ -214,7 +223,7 @@ class MissionController {
     // Berikan XP ke LevelingController
     await _levelingController.addXp(mission.xp, mission.skillId);
 
-    print(
+    debugPrint(
         'Mission ${mission.title} completed! Logged and user gained ${mission.xp} XP.');
   }
 
@@ -345,13 +354,24 @@ class MissionController {
     // Gabungkan kedua stream
     return Rx.combineLatest2(missionsStream, skillsStream,
         (List<MissionModel> missions, Map<String, SkillModel> skillsMap) {
-      // Untuk setiap misi, cari skill yang cocok di dalam map
-      return missions.map((mission) {
+      // Menggabungkan misi dengan skill
+      var enrichedMissions = missions.map((mission) {
         return EnrichedMissionModel(
           mission: mission,
-          skill: skillsMap[mission.skillId], // Ambil skill dari map
+          skill: skillsMap[mission.skillId],
         );
       }).toList();
+
+      // --- PENYESUAIAN DI SINI: Urutkan berdasarkan waktu mulai ---
+      enrichedMissions.sort((a, b) {
+        final timeA = a.mission.startTime;
+        final timeB = b.mission.startTime;
+        final aMinutes = timeA.hour * 60 + timeA.minute;
+        final bMinutes = timeB.hour * 60 + timeB.minute;
+        return aMinutes.compareTo(bMinutes);
+      });
+
+      return enrichedMissions;
     });
   }
 }

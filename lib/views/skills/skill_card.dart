@@ -1,5 +1,7 @@
 // lib/views/skills/skill_card.dart
 
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:habi_vault/controllers/skill_controller.dart';

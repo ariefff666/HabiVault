@@ -61,7 +61,7 @@ class LevelingController {
         'title': newTitle,
       });
 
-      // --- 2. Update XP & Level Skill dengan Logika Baru ---
+      // --- 2. Update XP & Level Skill ---
       var skillModel = SkillModel.fromMap(skillSnapshot.data()!);
       var currentSkillXp = skillModel.currentXp + xpGained;
       var currentSkillLevel = skillModel.level;
@@ -89,13 +89,12 @@ class LevelingController {
       }
 
       if (hasLeveledUp) {
-        // Buat model baru untuk dikirim ke event bus
         final updatedSkillForEvent = SkillModel(
           id: skillModel.id,
           name: skillModel.name,
           icon: skillModel.icon,
           color: skillModel.color,
-          level: currentSkillLevel, // Level yang sudah naik
+          level: currentSkillLevel,
           currentXp: currentSkillXp,
           xpForNextLevel: xpForNext,
           createdAt: skillModel.createdAt,
@@ -111,7 +110,7 @@ class LevelingController {
         'xpForNextLevel': xpForNext,
       });
 
-      // --- 3. Buat Log Perolehan XP (tidak berubah) ---
+      // --- 3. Buat Log Perolehan XP ---
       final xpLogRef = skillRef.collection('xp_log').doc();
       transaction.set(xpLogRef, {
         'xpGained': xpGained,

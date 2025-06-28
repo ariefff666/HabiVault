@@ -8,7 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:habi_vault/controllers/auth_controller.dart';
-import 'package:habi_vault/notifiers/theme_notifier.dart';
+// import 'package:habi_vault/notifiers/theme_notifier.dart';
 import 'package:habi_vault/widgets/custom_dialog.dart';
 import 'package:habi_vault/notifiers/auth_provider.dart' as custom_auth;
 
@@ -56,7 +56,7 @@ class _AuthViewState extends State<AuthView> {
     }
   }
 
-  // FUNGSI BARU UNTUK MENAMPILKAN DIALOG VERIFIKASI
+  // FUNGSI UNTUK MENAMPILKAN DIALOG VERIFIKASI
   void _showVerificationDialog() {
     showDialog(
       context: context,
@@ -149,7 +149,6 @@ class _AuthViewState extends State<AuthView> {
     }
   }
 
-  // ... (sisa kode _submitGoogle, build, _buildFormFields tidak berubah) ...
   Future<void> _submitGoogle() async {
     setState(() => _isLoading = true);
     try {
@@ -181,19 +180,19 @@ class _AuthViewState extends State<AuthView> {
               ),
             ),
           ),
-          Positioned(
-            top: 40,
-            right: 20,
-            child: Consumer<ThemeNotifier>(
-              builder: (context, theme, child) => IconButton(
-                icon: Icon(theme.themeMode == ThemeMode.dark
-                    ? Icons.light_mode_outlined
-                    : Icons.dark_mode_outlined),
-                onPressed: () => theme.toggleTheme(),
-                color: Colors.white,
-              ).animate().fade(delay: 500.ms),
-            ),
-          ),
+          // Positioned(
+          //   top: 40,
+          //   right: 20,
+          //   child: Consumer<ThemeNotifier>(
+          //     builder: (context, theme, child) => IconButton(
+          //       icon: Icon(theme.themeMode == ThemeMode.dark
+          //           ? Icons.light_mode_outlined
+          //           : Icons.dark_mode_outlined),
+          //       onPressed: () => theme.toggleTheme(),
+          //       color: Colors.white,
+          //     ).animate().fade(delay: 500.ms),
+          //   ),
+          // ),
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),

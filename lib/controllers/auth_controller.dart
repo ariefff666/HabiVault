@@ -43,7 +43,7 @@ class AuthController {
         return response.secureUrl;
       }
     } catch (e) {
-      if (kDebugMode) print('Error uploading to Cloudinary: $e');
+      if (kDebugMode) debugPrint('Error uploading to Cloudinary: $e');
       return null;
     }
     return null;

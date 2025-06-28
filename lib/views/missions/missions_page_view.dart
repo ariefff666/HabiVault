@@ -8,6 +8,7 @@ import 'package:habi_vault/models/mission_model.dart';
 import 'package:habi_vault/models/skill_model.dart';
 import 'package:habi_vault/views/missions/create_mission_altar.dart';
 import 'package:flutter_animate/flutter_animate.dart'; // Impor animate
+// ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
 import 'package:habi_vault/views/missions/edit_mission_panel.dart';
 import 'package:habi_vault/views/missions/mission_detail_page.dart';
@@ -16,7 +17,7 @@ import 'package:intl/intl.dart';
 enum MissionStatus { today, upcoming, completed }
 
 class QuestsPage extends StatefulWidget {
-  // --- PERUBAHAN: Gunakan ValueNotifier untuk menghindari rebuild ---
+  // --- Gunakan ValueNotifier untuk menghindari rebuild ---
   final ValueNotifier<bool> showAltarNotifier;
 
   const QuestsPage({super.key, required this.showAltarNotifier});
@@ -96,7 +97,7 @@ class _QuestsPageState extends State<QuestsPage>
     );
   }
 
-  // LOGIKA BARU UNTUK MEMFILTER DAN MENGELOMPOKKAN
+  // LOGIKA UNTUK MEMFILTER DAN MENGELOMPOKKAN
   Map<MissionStatus, Map<SkillModel, List<EnrichedMissionModel>>>
       _groupAndFilterMissions(List<EnrichedMissionModel> allMissions) {
     final now = DateTime.now();
@@ -212,10 +213,8 @@ class _QuestsPageState extends State<QuestsPage>
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
-      // Tambah 1 untuk kartu "Forge Mission"
       itemCount: skillGroups.length + 1,
       itemBuilder: (context, index) {
-        // KEMBALIKAN KARTU "FORGE MISSION" DI ATAS
         if (index == 0) {
           return _buildAddMissionCard();
         }
@@ -266,82 +265,6 @@ class _QuestsPageState extends State<QuestsPage>
     ).animate().fadeIn(duration: 400.ms);
   }
 
-  // Widget _buildMissionList(
-  //     String filter, Map<SkillModel, List<MissionModel>> allGroupedData) {
-  //   final now = DateTime.now();
-  //   final todayWeekday = now.weekday;
-
-  //   final Map<SkillModel, List<MissionModel>> filteredGroupedData = {};
-
-  //   allGroupedData.forEach((skill, missions) {
-  //     List<MissionModel> filteredMissions = missions.where((m) {
-  //       final isCompletedToday =
-  //           m.lastCompleted != null && m.lastCompleted!.toDate().day == now.day;
-  //       final isScheduledForToday = m.scheduleDays.contains(todayWeekday);
-
-  //       switch (filter) {
-  //         case 'today':
-  //           return isScheduledForToday && !isCompletedToday;
-  //         case 'upcoming':
-  //           return !isScheduledForToday && !isCompletedToday;
-  //         case 'completed':
-  //           return isCompletedToday;
-  //         default:
-  //           return false;
-  //       }
-  //     }).toList();
-
-  //     if (filteredMissions.isNotEmpty) {
-  //       filteredGroupedData[skill] = filteredMissions;
-  //     }
-  //   });
-
-  //   if (filteredGroupedData.isEmpty) {
-  //     switch (filter) {
-  //       case 'today':
-  //         return const _EmptyStateCard(
-  //           icon: Icons.nightlight_round,
-  //           title: 'A Quiet Day',
-  //           subtitle:
-  //               'No missions are scheduled for today. Forge a new quest or enjoy your well-deserved peace!',
-  //         );
-  //       case 'upcoming':
-  //         return const _EmptyStateCard(
-  //           icon: Icons.map_outlined,
-  //           title: 'The Path is Clear',
-  //           subtitle:
-  //               'You have no upcoming missions scheduled for other days. Plan your next adventure!',
-  //         );
-  //       case 'completed':
-  //         return const _EmptyStateCard(
-  //           icon: Icons.hourglass_empty_rounded,
-  //           title: 'Log is Empty',
-  //           subtitle:
-  //               'No missions have been completed today. A new legend is waiting to be written.',
-  //           showButton:
-  //               false, // Tidak perlu tombol tambah misi di tab "Selesai"
-  //         );
-  //       default:
-  //         return const Center(child: Text('No missions found.'));
-  //     }
-  //   }
-
-  //   final skillGroups = filteredGroupedData.entries.toList();
-
-  //   return ListView.builder(
-  //     padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
-  //     itemCount: skillGroups.length + 1,
-  //     itemBuilder: (context, index) {
-  //       if (index == 0) {
-  //         return _buildAddMissionCard();
-  //       }
-  //       final skill = skillGroups[index - 1].key;
-  //       final missions = skillGroups[index - 1].value;
-  //       return _SkillMissionGroup(skill: skill, missions: missions);
-  //     },
-  //   );
-  // }
-
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
@@ -380,7 +303,7 @@ class _QuestsPageState extends State<QuestsPage>
   }
 }
 
-// --- WIDGET-WIDGET BARU UNTUK TAMPILAN JURNAL ---
+// --- WIDGET-WIDGET UNTUK TAMPILAN JURNAL ---
 
 class _SkillMissionGroup extends StatelessWidget {
   final SkillModel skill;
@@ -430,7 +353,7 @@ class _SkillMissionGroup extends StatelessWidget {
   }
 }
 
-// WIDGET UTAMA BARU: MissionTile
+// WIDGET UTAMA: MissionTile
 class MissionTile extends StatefulWidget {
   final EnrichedMissionModel enrichedMission;
   final MissionStatus status;
@@ -464,7 +387,7 @@ class _MissionTileState extends State<MissionTile> {
     _missionController.completeMission(widget.enrichedMission.mission);
   }
 
-  // FUNGSI BARU UNTUK DIALOG RESCHEDULE
+  // FUNGSI UNTUK DIALOG RESCHEDULE
   Future<void> _showRescheduleDialog(
       BuildContext context, MissionModel mission) async {
     final now = DateTime.now();
@@ -567,7 +490,6 @@ class _MissionTileState extends State<MissionTile> {
         }
         return 'Dimulai dalam ${difference.inDays} hari lagi (${DateFormat.EEEE().format(nextDate)})';
       case MissionStatus.completed:
-        // Logika format waktu selesai tidak berubah
         final completedTime = mission.lastCompleted!.toDate();
         if (DateUtils.isSameDay(completedTime, now)) {
           return 'Selesai pada ${DateFormat.Hm().format(completedTime)}';

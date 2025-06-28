@@ -209,8 +209,7 @@ class _CreateMissionAltarState extends State<CreateMissionAltar> {
   }
 }
 
-// --- WIDGET MINI ALTAR (Tidak ada perubahan) ---
-// ... (Salin seluruh class _MinimizedAltar dari jawaban sebelumnya)
+// --- WIDGET MINI ALTAR ---
 class _MinimizedAltar extends StatefulWidget {
   final Map<String, dynamic> formData;
   final VoidCallback onExpand;
@@ -404,7 +403,6 @@ class __MissionFormContentsState extends State<_MissionFormContents> {
     widget.scrollController.addListener(_onScrollChanged);
   }
 
-  // ... (fungsi _restoreFormData hingga _closeAltar tidak berubah)
   void _restoreFormData() {
     if (widget.formData.isNotEmpty) {
       _titleController.text = widget.formData['title'] ?? '';
@@ -491,7 +489,6 @@ class __MissionFormContentsState extends State<_MissionFormContents> {
   }
 
   void _submitForm() async {
-    // ... (Fungsi submit sama seperti sebelumnya)
     if (!_isFormValid || _isLoading) return;
     if (_formKey.currentState?.validate() == false) return;
 
@@ -535,7 +532,6 @@ class __MissionFormContentsState extends State<_MissionFormContents> {
     }
   }
 
-  // ... (fungsi _xpLabel, _selectTime, sama seperti sebelumnya)
   String get _xpLabel {
     if (_currentXp < 30) return 'Santai';
     if (_currentXp < 60) return 'Tantangan Harian';
@@ -580,9 +576,6 @@ class __MissionFormContentsState extends State<_MissionFormContents> {
       ),
     );
   }
-
-  // Widget build method lainnya tidak berubah...
-  // ... Salin _buildResponsiveStickySubmitButton dan sisanya dari jawaban sebelumnya ...
 
   Widget _buildResponsiveStickySubmitButton() {
     bool shouldHideButton = false;

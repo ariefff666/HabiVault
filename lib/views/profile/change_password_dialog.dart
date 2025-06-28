@@ -119,8 +119,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 decoration: const InputDecoration(
                     labelText: 'Konfirmasi Password Baru'),
                 validator: (v) {
-                  if (v != _newPasswordController.text)
+                  if (v != _newPasswordController.text) {
                     return 'Password tidak cocok';
+                  }
                   return null;
                 },
               ),

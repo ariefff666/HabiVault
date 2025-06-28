@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:habi_vault/controllers/user_controller.dart';
@@ -80,7 +82,6 @@ class _ProfileViewState extends State<ProfileView> {
 
   Widget _buildProfileHeader(
       BuildContext context, UserModel user, double progress) {
-    // ... (Tidak ada perubahan di sini)
     return Column(
       children: [
         CircleAvatar(
@@ -123,7 +124,6 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildStatsGrid() {
-    // ... (Tidak ada perubahan di sini)
     return LayoutBuilder(builder: (context, constraints) {
       return GridView.count(
         crossAxisCount: 2,
@@ -155,9 +155,8 @@ class _ProfileViewState extends State<ProfileView> {
         const Text('Pencapaian',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
-        // --- PERBAIKAN DI SINI: Tinggi SizedBox ditambah ---
         SizedBox(
-          height: 120, // Ditambah dari 100 ke 120
+          height: 120,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: const [
@@ -179,7 +178,6 @@ class _ProfileViewState extends State<ProfileView> {
 }
 
 class _StatCard extends StatelessWidget {
-  // ... (Tidak ada perubahan di sini)
   final IconData icon;
   final String value;
   final String label;
@@ -222,7 +220,6 @@ class _StatCard extends StatelessWidget {
 }
 
 class _AchievementBadge extends StatelessWidget {
-  // ... (Tidak ada perubahan di sini)
   final IconData icon;
   final String label;
   final bool locked;

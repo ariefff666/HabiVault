@@ -216,7 +216,7 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
     );
   }
 
-  // --- WIDGET BARU UNTUK HEADER LOG ---
+  // --- WIDGET UNTUK HEADER LOG ---
   // ignore: non_constant_identifier_names
   Widget _ChronicleLogHeader() {
     return Row(
@@ -235,7 +235,7 @@ class _MissionDetailPageState extends State<MissionDetailPage> {
     ).animate().fadeIn(delay: 600.ms).slideX(begin: -0.1);
   }
 
-  // --- WIDGET BARU UNTUK MEMBANGUN LOG ---
+  // --- WIDGET UNTUK MEMBANGUN LOG ---
   Widget _buildChronicleLog() {
     return StreamBuilder<QuerySnapshot>(
       stream: _missionController

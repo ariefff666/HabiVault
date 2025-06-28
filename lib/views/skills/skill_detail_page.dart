@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:habi_vault/controllers/mission_controller.dart';
@@ -153,7 +155,7 @@ class _SkillDetailPageState extends State<SkillDetailPage>
     );
   }
 
-  // WIDGET BARU: Panel Statistik
+  // WIDGET: Panel Statistik
   Widget _buildStatsPanel(SkillModel skill) {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -172,8 +174,9 @@ class _SkillDetailPageState extends State<SkillDetailPage>
             child: StreamBuilder<List<Map<String, dynamic>>>(
               stream: _skillController.getXpLogForSkill(skill.id),
               builder: (context, snapshot) {
-                if (!snapshot.hasData)
+                if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
+                }
 
                 // Proses data log menjadi data yang bisa dibaca oleh grafik
                 final spots = _processXpLogForChart(snapshot.data!);
@@ -276,8 +279,9 @@ class _SkillDetailPageState extends State<SkillDetailPage>
     return StreamBuilder<List<MissionModel>>(
       stream: _missionController.getMissionsForSkill(skillId),
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
+        if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
+        }
 
         final now = DateTime.now();
         final missions = snapshot.data!.where((m) {

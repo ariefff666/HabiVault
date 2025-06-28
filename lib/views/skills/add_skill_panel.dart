@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -132,7 +134,7 @@ class _AddSkillPanelState extends State<AddSkillPanel> {
         Navigator.of(context).pop();
       }
     } catch (e) {
-      print('Error creating skill: $e');
+      debugPrint('Error creating skill: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error: Could not create skill.')));

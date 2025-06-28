@@ -27,7 +27,7 @@ class SkillModel {
     required this.createdAt,
   });
 
-  // --- GETTER BARU UNTUK TIER ---
+  // --- GETTER UNTUK TIER ---
   SkillTier get tier {
     if (level >= 30) return SkillTier.professional;
     if (level >= 20) return SkillTier.expert;
@@ -35,7 +35,7 @@ class SkillModel {
     return SkillTier.beginner;
   }
 
-  // --- GETTER BARU UNTUK NAMA TIER ---
+  // --- GETTER UNTUK NAMA TIER ---
   String get tierName {
     switch (tier) {
       case SkillTier.amateur:

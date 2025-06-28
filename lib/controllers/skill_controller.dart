@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:habi_vault/models/skill_model.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -66,7 +67,7 @@ class SkillController {
     );
 
     await newSkillRef.set(newSkill);
-    print('New skill "$name" added to Firestore with timestamp!');
+    debugPrint('New skill "$name" added to Firestore with timestamp!');
   }
 
   // --- UPDATE SKILL ---
@@ -107,7 +108,7 @@ class SkillController {
     // 4. Jalankan semua operasi dalam satu transaksi
     await batch.commit();
 
-    print(
+    debugPrint(
         'Skill $skillId dan ${missionsSnapshot.docs.length} misi terhubung telah dihapus.');
   }
 
